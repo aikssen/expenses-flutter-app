@@ -55,7 +55,7 @@ class _MyHomePageState extends State<MyHomePage> {
     // Transaction(
     //   id: 't1',
     //   title: 'Macbook M1',
-    //   amount: 1099,
+    //   amount: 1099.50,
     //   date: DateTime.now(),
     // ),
   ];
@@ -86,6 +86,12 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  List<Transaction> get _getRecentTransactions {
+    return _userTransactions.where((tx) {
+      return tx.date.isAfter(DateTime.now().subtract(Duration(days: 7)));
+    }).toList();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -107,7 +113,7 @@ class _MyHomePageState extends State<MyHomePage> {
             Container(
               width: double.infinity,
               child: Card(
-                child: Chart(),
+                child: Chart(_getRecentTransactions),
               ),
             ),
             TransactionList(_userTransactions),
