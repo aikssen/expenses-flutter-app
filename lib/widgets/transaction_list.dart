@@ -5,14 +5,14 @@ import 'package:expenses/models/transaction.dart';
 
 class TransactionList extends StatelessWidget {
   final List<Transaction> transactions;
-  Function deleteTransaction;
+  final Function deleteTransaction;
 
   TransactionList(this.transactions, this.deleteTransaction);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 300,
+      height: 600,
       child: transactions.isEmpty
           ? Column(
               children: <Widget>[

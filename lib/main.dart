@@ -123,7 +123,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: Chart(_getRecentTransactions),
               ),
             ),
-            TransactionList(_userTransactions, _deleteTransaction),
+            Container(
+              child: TransactionList(_userTransactions, _deleteTransaction),
+            ),
           ],
         ),
       ),
