@@ -6,17 +6,29 @@ import 'package:expenses/widgets/new_transaction.dart';
 import 'package:expenses/widgets/transaction_list.dart';
 import 'package:expenses/widgets/chart.dart';
 
-void main() => runApp(MyApp());
+void main() {
+  // render only in portrait mode
+  // WidgetsFlutterBinding.ensureInitialized();
+  // SystemChrome.setPreferredOrientations([
+  //   DeviceOrientation.portraitUp,
+  //   DeviceOrientation.portraitDown,
+  // ]);
+
+  return runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    // calculate font size for the device size
+    // final curScaleFactor = MediaQuery.of(context).textScaleFactor;
+
     return MaterialApp(
       title: 'Personal Expenses',
       home: MyHomePage(),
       theme: ThemeData(
         primarySwatch: Colors.indigo,
-        // accentColor: Colors.teal,
+        accentColor: Colors.indigoAccent,
         fontFamily: 'Quicksand',
         appBarTheme: AppBarTheme(
           textTheme: ThemeData.light().textTheme.copyWith(
@@ -60,6 +72,8 @@ class _MyHomePageState extends State<MyHomePage> {
     // ),
   ];
 
+  bool _showChart = true;
+
   void _addNewTransaction(String title, double amount, DateTime date) {
     final transaction = Transaction(
       id: DateTime.now().toString(),
@@ -101,31 +115,74 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final mediaQuery = MediaQuery.of(context);
+    final isLandscape = mediaQuery.orientation == Orientation.landscape;
+
+    // appbar - extracted as a variable to have access to its height
+    final appBar = AppBar(
+      title: Text('Personal Expenses'),
+      brightness: Brightness.dark, // ios time/battery
+      actions: <Widget>[
+        IconButton(
+          icon: Icon(Icons.add),
+          onPressed: () => _startAddNewTransaction(context),
+        )
+      ],
+    );
+
+    final txListWidget = Container(
+      height: (mediaQuery.size.height -
+              appBar.preferredSize.height -
+              mediaQuery.padding.top) *
+          0.75,
+      child: TransactionList(_userTransactions, _deleteTransaction),
+    );
+
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Personal Expenses'),
-        brightness: Brightness.dark, // ios time/battery
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.add),
-            onPressed: () => _startAddNewTransaction(context),
-          )
-        ],
-      ),
+      appBar: appBar,
       body: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            Container(
-              width: double.infinity,
-              child: Card(
-                child: Chart(_getRecentTransactions),
+            if (isLandscape)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Text('Show Chart'),
+                  Switch(
+                    value: _showChart,
+                    onChanged: (val) {
+                      setState(() {
+                        _showChart = val;
+                      });
+                    },
+                  ),
+                ],
               ),
-            ),
-            Container(
-              child: TransactionList(_userTransactions, _deleteTransaction),
-            ),
+            if (!isLandscape)
+              Container(
+                height: (mediaQuery.size.height -
+                        appBar.preferredSize.height -
+                        mediaQuery.padding.top) *
+                    0.25,
+                child: Card(
+                  child: Chart(_getRecentTransactions),
+                ),
+              ),
+            if (!isLandscape) txListWidget,
+            if (isLandscape)
+              _showChart
+                  ? Container(
+                      height: (mediaQuery.size.height -
+                              appBar.preferredSize.height -
+                              mediaQuery.padding.top) *
+                          0.8,
+                      child: Card(
+                        child: Chart(_getRecentTransactions),
+                      ),
+                    )
+                  : txListWidget,
           ],
         ),
       ),

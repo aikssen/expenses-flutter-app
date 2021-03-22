@@ -5,32 +5,37 @@ import 'package:expenses/models/transaction.dart';
 
 class TransactionList extends StatelessWidget {
   final List<Transaction> transactions;
-  final Function deleteTransaction;
+  final Function deleteTx;
 
-  TransactionList(this.transactions, this.deleteTransaction);
+  TransactionList(this.transactions, this.deleteTx);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 600,
       child: transactions.isEmpty
-          ? Column(
-              children: <Widget>[
-                Text(
-                  'No transactions added yet!',
-                  style: Theme.of(context).textTheme.headline5,
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                Container(
-                    height: 200,
+          ? LayoutBuilder(builder: (ctx, constrains) {
+              return Column(
+                children: <Widget>[
+                  Container(
+                    //height: 20, //constrains.maxHeight * 0.1,
+                    child: Text(
+                      'No transactions added yet!',
+                      style: Theme.of(context).textTheme.headline5,
+                    ),
+                  ),
+                  SizedBox(
+                    height: 10, //constrains.maxHeight * 0.05,
+                  ),
+                  Container(
+                    height: constrains.maxHeight * 0.6,
                     child: Image.asset(
                       'assets/images/waiting.png',
                       fit: BoxFit.cover,
-                    )),
-              ],
-            )
+                    ),
+                  ),
+                ],
+              );
+            })
           : ListView.builder(
               itemBuilder: (ctx, index) {
                 return Card(
@@ -56,12 +61,18 @@ class TransactionList extends StatelessWidget {
                     subtitle: Text(
                       DateFormat.yMMMd().format(transactions[index].date),
                     ),
-                    trailing: IconButton(
-                      icon: Icon(Icons.delete),
-                      // color: Colors.red,
-                      onPressed: () =>
-                          deleteTransaction(transactions[index].id),
-                    ),
+                    // change button if is in landscape
+                    trailing: MediaQuery.of(context).size.width > 900
+                        ? TextButton.icon(
+                            icon: Icon(Icons.delete),
+                            onPressed: () => deleteTx(transactions[index].id),
+                            label: Text('Delete'),
+                          )
+                        : IconButton(
+                            icon: Icon(Icons.delete),
+                            // color: Colors.red,
+                            onPressed: () => deleteTx(transactions[index].id),
+                          ),
                   ),
                 );
               },
