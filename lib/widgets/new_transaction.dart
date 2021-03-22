@@ -4,6 +4,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import 'package:expenses/widgets/adaptive_flat _button.dart';
+
 class NewTransaction extends StatefulWidget {
   final Function callback;
 
@@ -100,20 +102,7 @@ class _NewTransactionState extends State<NewTransaction> {
                   ],
                 ),
               ),
-              Platform.isIOS
-                  ? CupertinoButton(
-                      color: Colors.indigoAccent,
-                      onPressed: _submitData,
-                      child: Text(
-                        'Add Transaction',
-                      ),
-                    )
-                  : ElevatedButton(
-                      onPressed: _submitData,
-                      child: Text(
-                        'Add Transaction',
-                      ),
-                    ),
+              AdaptiveFlatButton('Add Transaction', _submitData),
             ],
           ),
         ),
