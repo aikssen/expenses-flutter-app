@@ -59,7 +59,7 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   final List<Transaction> _userTransactions = [
     // Transaction(
     //   id: 't1',
@@ -76,6 +76,28 @@ class _MyHomePageState extends State<MyHomePage> {
   ];
 
   bool _showChart = true;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    WidgetsBinding.instance.addObserver(this);
+    super.initState();
+  }
+
+  // this funcions is called when the lifecycle state changes - resumed, suspended, inactive, paused, etc
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // TODO: implement didChangeAppLifecycleState
+    print(
+        state); // inactive, paused - this happen when the user swithc to the device home/desktop page
+    super.didChangeAppLifecycleState(state);
+  }
+
+  @override
+  dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
 
   void _addNewTransaction(String title, double amount, DateTime date) {
     final transaction = Transaction(
